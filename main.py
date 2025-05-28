@@ -8,10 +8,7 @@ POWERS = [2**i for i in range(1,9)]
 def quantize(value):
      quantize_scale = st.session_state.get('quantize_scale', POWERS[0])
      
-     if quantize_scale == 0:
-          return POWERS[0]
-     
-     increment = 256 / quantize_scale
+     increment = 256 / (quantize_scale - 1)
 
      res = round(value/increment) * increment
 
@@ -78,10 +75,10 @@ else:
 
                     # Fazendo na raça
                     # r_modified, g_modified, b_modified = [
-                    #      convert_image(channel, quantize_scale)
+                    #      convert_image(channel)
                     #      for channel in pil_image_rgb.split()
                     # ]
-                    #
+                    
                     # modified_image = Image.merge("RGB", (r_modified, g_modified, b_modified))
                     st.image(modified_image, "Imagem Quantizada")
 
