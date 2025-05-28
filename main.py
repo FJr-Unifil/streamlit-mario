@@ -27,6 +27,17 @@ def convert_image(img):
      modified_image = Image.fromarray(image_array)
      return modified_image
 
+def channels_average(img):
+     width, height = img.size
+     image_array = np.empty((height, width), dtype=np.uint8)
+     r, b, g = [np.array(channel) for channel in img.split()]
+
+     for row, array in enumerate(np.array(img)):
+          for c, _ in enumerate(array):
+               image_array[row][c] = quantize((int(r[row][c]) + int(b[row][c]) + int(g[row][c])) //3)
+
+     return Image.fromarray(image_array)
+
 def update_quantize_scale_value(i):
      st.session_state.quantize_scale = st.session_state.get(f"select_slider_tab{i + 1}", POWERS[0])
 
@@ -54,16 +65,7 @@ else:
                     slider_key = f"select_slider_tab{i + 1}"
                     quantize_scale = st.select_slider("Selecione a Quantização da Imagem", POWERS, POWERS[0], key=slider_key)
                     st.session_state.quantize_scale = quantize_scale
-                    pil_image_gray = pil_image.convert("L")
-
-                    # utilizando o point() do Image, 
-                    lut = [quantize(i) for i in range(256)]
-                    gray_image_modified = pil_image_gray.point(lut)
-
-                    # Fazendo na raça
-                    # gray_image_modified = convert_image(pil_image_gray)
-                    
-                    st.image(gray_image_modified, caption="Imagem Usando Escala Cinza")
+                    st.write(channels_average(pil_image))
 
                if st.session_state.radio == "Quantização":
                     pil_image = Image.open(file)
